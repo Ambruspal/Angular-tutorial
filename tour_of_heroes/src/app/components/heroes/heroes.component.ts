@@ -11,8 +11,6 @@ import { MessageService } from 'src/app/services/message.service';
     styleUrls: ['./heroes.component.scss'],
 })
 export class HeroesComponent implements OnInit {
-    selectedHero?: Hero;
-
     heroes: Hero[] = [];
 
     constructor(private hs: HeroService, private mesSer: MessageService) {}
@@ -25,8 +23,18 @@ export class HeroesComponent implements OnInit {
         this.hs.getHeroes().subscribe(heroes => (this.heroes = heroes));
     }
 
-    onSelect(hero: Hero): void {
-        this.selectedHero = hero;
-        this.mesSer.add(`HeroesComponent: Selected hero id=${hero.id}`);
+    onAdd(name: string): void {
+        name = name.trim();
+        if (!name) {
+            return;
+        }
+        this.hs.addHero({ name } as Hero).subscribe(hero => {
+            this.heroes.push(hero);
+        });
+    }
+
+    onDelete(hero: Hero): void {
+        this.heroes = this.heroes.filter(h => h !== hero);
+        this.hs.deleteHero(hero.id).subscribe();
     }
 }
